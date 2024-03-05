@@ -1,2 +1,6 @@
+#API
 fastapi
 uvicorn
+
+#firebase
+firebase-admin
