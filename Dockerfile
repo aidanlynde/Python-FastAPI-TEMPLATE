@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 # Copy the current directory contents into the container at /usr/src/app
 COPY ./app /usr/src/app/app
 COPY requirements.txt /usr/src/app/
+COPY ./secrets /usr/src/app/secrets
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt

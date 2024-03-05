@@ -8,7 +8,7 @@ from firebase_admin import credentials
 
 @app.on_event("startup")
 def startup_event():
-    cred = credentials.Certificate("/Users/kareembenaissa/dev/python_dev/slushbrain/slushchat-oaruvo-firebase-adminsdk-7ez3i-399bc3252c.json")
+    cred = credentials.Certificate("secrets/fbsa_creds.json")
     firebase_admin.initialize_app(cred, {
         'projectId': 'slushchat-oaruvo',
     })
