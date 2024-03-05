@@ -4,3 +4,4 @@ uvicorn
 
 #firebase
 firebase-admin
+pydantic

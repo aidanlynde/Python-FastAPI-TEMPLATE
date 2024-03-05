@@ -1,13 +1,20 @@
+#fastapi
 from fastapi import APIRouter, Depends
-from firebase_admin import firestore
 
-from ...dependencies import get_users
+#dependencies and models
+from ...dependencies import get_users, get_user
+
+from ...models import User
 
 router = APIRouter()
 
 @router.get("/")
 async def read_users(users: list = Depends(get_users)):
     return {"Users": users}
+
+@router.get("/{user_id}", response_model=User)
+async def read_user(user: User = Depends(get_user)):
+    return user
 
 # @router.get("/")
 # async def read_users(db: firestore.firestore.Client = Depends(get_firestore_client)):
