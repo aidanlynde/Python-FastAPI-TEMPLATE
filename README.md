@@ -1,6 +1,10 @@
 # slushbrain
 
-Run with
+Run with **make run**
+
+Build docker with **make build**
+
+Start docker container with **make start**
 ```
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 
