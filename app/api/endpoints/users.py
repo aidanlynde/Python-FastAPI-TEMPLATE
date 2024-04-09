@@ -1,35 +1,31 @@
 #fastapi
 from fastapi import APIRouter, Depends
 
-#dependencies and models
-from ...dependencies import get_users, get_user
+#firebase
+from firebase_admin import firestore
 
-from ...models import User
+#dependencies, schemas
+#use schemas instead of models because the schemas represent the request and response data, while models represent the data in the database
+#use crud to update database, and dependencies to connect to database.
+
+from ...dependencies import get_firestore_client
+from ...schemas import UserCreate, UserResponse
+from ...crud import create_user, get_user
+
+from typing import List
 
 router = APIRouter()
 
-@router.get("/")
-async def read_users(users: list = Depends(get_users)):
-    return {"Users": users}
 
-@router.get("/{user_id}", response_model=User)
-async def read_user(user: User = Depends(get_user)):
+@router.get("/{user_id}", response_model=UserResponse)
+async def read_user(user_id: str, db: firestore.firestore.Client = Depends(get_firestore_client)):
+    user = get_user(db, user_id)
     return user
 
-# @router.get("/")
-# async def read_users(db: firestore.firestore.Client = Depends(get_firestore_client)):
-#     users_ref = db.collection('users')
-#     users = users_ref.stream()
-#     users_list = [user.to_dict() for user in users]
-#     return {"Users": users_list}
+@router.post("/users/", response_model=UserResponse)
+def create_user_endpoint(user_create: UserCreate, db: firestore.firestore.Client = Depends(get_firestore_client)):
+    return create_user(db, user_create)
 
-
-# @router.get("/")
-# async def read_users():
-#     users_ref = db.collection('users')
-#     users = users_ref.stream()
-#     users_list = get_users()
-#     return {"Users": users_list}
 
 
 

@@ -4,4 +4,7 @@ uvicorn
 
 #firebase
 firebase-admin
+
+# typing and schemas
 pydantic
+pydantic[email] # needs this optional import for email validation. if manually installing in zsh, use pip install "pydantic[email]"  (with quotes).
