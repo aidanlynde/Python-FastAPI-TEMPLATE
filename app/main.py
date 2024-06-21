@@ -2,15 +2,13 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from firebase_admin import credentials, auth as firebase_auth, firestore
 import firebase_admin
+from fastapi.middleware.cors import CORSMiddleware
 
 from .dependencies import get_current_user, get_firebase_app, get_firestore_client
 
 app = FastAPI()
 
 # Initialize firebase 
-import firebase_admin
-from firebase_admin import credentials
-
 @app.on_event("startup")
 def startup_event():
     cred = credentials.Certificate("secrets/fbsa_creds.json")
@@ -21,6 +19,20 @@ def startup_event():
     except Exception as e:
         print(f"Error initializing Firebase: {e}")
 
+
+# CORS middleware
+origins = [
+    "http://localhost:3000",
+    # Add other origins as needed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Import routers after Firebase initialization
 from .api.router import api_router
@@ -45,13 +57,22 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Internal Server Error"
         )
 
-""" @app.get("/users/me", response_model=dict)
+@app.get("/users/me", response_model=dict)
 def read_users_me(current_user: dict = Depends(get_current_user), db=Depends(get_firestore_client)):
-    # Example of querying Firestore
-    user_doc = db.collection('users').document(current_user['email']).get()
+    print(f"Current user: {current_user}")  # Debugging line
+    email = current_user.get("email")
+    if not email:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")
+    
+    user_doc = db.collection('users').document(email).get()
     if not user_doc.exists:
         raise HTTPException(status_code=404, detail="User not found")
-    return user_doc.to_dict() """
+    return user_doc.to_dict()
+
+
+@app.get("/api/data")
+async def get_data():
+    return {"message": "Hello from FastAPI"}
 
 
 app.include_router(api_router)

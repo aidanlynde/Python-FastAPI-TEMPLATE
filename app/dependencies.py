@@ -34,10 +34,15 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
+        print(f"Received token: {token}")  # Debugging line
         decoded_token = firebase_auth.verify_id_token(token)
+        print(f"Decoded token: {decoded_token}")  # Debugging line
         email = decoded_token.get("email")
         if email is None:
+            print("Email not found in token")  # Debugging line
             raise credentials_exception
-    except Exception:
+        print(f"Token email: {email}")  # Debugging line
+    except Exception as e:
+        print(f"Error verifying token: {e}")  # Debugging line
         raise credentials_exception
     return decoded_token  # You can return the entire decoded token or just the email
