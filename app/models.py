@@ -1,21 +1,15 @@
-# from typing import List, Optional
-# from pydantic import BaseModel, HttpUrl
-# from enum import Enum
+from typing import List, Optional
+from pydantic import BaseModel, HttpUrl
+from enum import Enum
 
-# #Preffered Payment Method
-# class PPMEnum(str, Enum):
-#     venmo = "Venmo"
-#     cashapp = "CashApp"
-#     paypal = "PayPal"
-#     zelle = "Zelle"
-
-# class User(BaseModel):
-#     uid: str
-#     email: str
-#     display_name: str
-#     photo_url: HttpUrl  # Validates URL format
-#     # ppm: PPMEnum
-#     # ppm_identifier: str
+class UserProfile(BaseModel):
+    uid: str
+    email: str
+    full_name: str
+    age: int
+    gender: str
+    height: float
+    weight: float
 
 
 

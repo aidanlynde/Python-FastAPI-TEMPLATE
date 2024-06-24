@@ -5,6 +5,7 @@ import firebase_admin
 from fastapi.middleware.cors import CORSMiddleware
 
 from .dependencies import get_current_user, get_firebase_app, get_firestore_client
+from .models import UserProfile
 
 app = FastAPI()
 
@@ -73,6 +74,23 @@ def read_users_me(current_user: dict = Depends(get_current_user), db=Depends(get
 @app.get("/api/data")
 async def get_data():
     return {"message": "Hello from FastAPI"}
+
+
+@app.post("/save_profile")
+async def save_profile(user_profile: UserProfile, db=Depends(get_firestore_client)):
+    try:
+        user_ref = db.collection('users').document(user_profile.uid)
+        user_ref.set({
+            'full_name': user_profile.full_name,
+            'age': user_profile.age,
+            'gender': user_profile.gender,
+            'height': user_profile.height,
+            'weight': user_profile.weight,
+            'email': user_profile.email
+        })
+        return {"status": "success"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 app.include_router(api_router)
