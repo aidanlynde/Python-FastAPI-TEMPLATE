@@ -3,6 +3,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from firebase_admin import credentials, auth as firebase_auth, firestore
 import firebase_admin
 from fastapi.middleware.cors import CORSMiddleware
+import openai
+import os
 
 from .dependencies import get_current_user, get_firebase_app, get_firestore_client
 from .models import UserProfile
