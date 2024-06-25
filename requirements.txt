@@ -1,6 +1,7 @@
 #API
 fastapi
 uvicorn
+openai
 
 #firebase
 firebase-admin

@@ -9,6 +9,7 @@ from firebase_admin import credentials
 
 # other imports
 from typing import Generator
+from .schemas import TokenData
 
 # Initialize Firebase Admin in your main.py or here with a check to prevent reinitialization
 def get_firebase_app():
@@ -27,7 +28,7 @@ def get_firestore_client() -> firestore.firestore.Client:
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -38,11 +39,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         decoded_token = firebase_auth.verify_id_token(token)
         print(f"Decoded token: {decoded_token}")  # Debugging line
         email = decoded_token.get("email")
-        if email is None:
-            print("Email not found in token")  # Debugging line
+        uid = decoded_token.get("uid")
+        if email is None or uid is None:
+            print("Email or UID not found in token")  # Debugging line
             raise credentials_exception
-        print(f"Token email: {email}")  # Debugging line
+        print(f"Token email: {email}, UID: {uid}")  # Debugging line
+        return TokenData(email=email, uid=uid)
     except Exception as e:
         print(f"Error verifying token: {e}")  # Debugging line
         raise credentials_exception
-    return decoded_token  # You can return the entire decoded token or just the email
