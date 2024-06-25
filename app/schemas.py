@@ -18,10 +18,24 @@ class UserCreate(BaseModel):
 # Schema for responses, potentially including more information
 #   designed as the read only fields for a user, separate from the create fields
 class UserResponse(BaseModel):
-    uid: str
     email: EmailStr
-    display_name: str
-    photo_url: HttpUrl
+    full_name: str
+    age: int
+    gender: str
+    height: float
+    weight: float
+
+class TokenData(BaseModel):
+    email: EmailStr
+    uid: str
+
+class UserProfile(BaseModel):
+    email: EmailStr
+    full_name: str
+    age: int
+    gender: str
+    height: float
+    weight: float
     # Additional fields used in responses but not in creation
     # ppm: Optional[PPMEnum]
     # ppm_identifier: Optional[str]

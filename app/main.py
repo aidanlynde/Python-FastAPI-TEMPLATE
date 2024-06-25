@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .dependencies import get_current_user, get_firebase_app, get_firestore_client
 from .models import UserProfile
+from .schemas import TokenData, UserProfile
 
 app = FastAPI()
 
@@ -58,17 +59,29 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Internal Server Error"
         )
 
-@app.get("/users/me", response_model=dict)
-def read_users_me(current_user: dict = Depends(get_current_user), db=Depends(get_firestore_client)):
+@app.get("/users/me", response_model=UserProfile)
+def read_users_me(current_user: TokenData = Depends(get_current_user), db=Depends(get_firestore_client)):
     print(f"Current user: {current_user}")  # Debugging line
-    email = current_user.get("email")
-    if not email:
+    email = current_user.email
+    uid = current_user.uid
+    if not email or not uid:
+        print("No email or UID found in token.")
         raise HTTPException(status_code=401, detail="Could not validate credentials")
-    
-    user_doc = db.collection('users').document(email).get()
+
+    user_doc = db.collection('users').document(uid).get()
     if not user_doc.exists:
+        print(f"User document not found for UID: {uid}")
         raise HTTPException(status_code=404, detail="User not found")
-    return user_doc.to_dict()
+    
+    user_data = user_doc.to_dict()
+    return UserProfile(
+        email=user_data.get('email'),
+        full_name=user_data.get('full_name'),
+        age=user_data.get('age'),
+        gender=user_data.get('gender'),
+        height=user_data.get('height'),
+        weight=user_data.get('weight')
+    )
 
 
 @app.get("/api/data")
